@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js" type="text/javascript"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var sock = null;
+	
+	function connect() {
+		//sock = new SockJS("/sockjs/echo");
+		sock = new SockJS("/sockjs/echo", undefined, {protocols_whitelist: []});
+		sock.onopen = function() {
+			console.log('open');
+		};
+		sock.onmessage = function(event) {
+			var text  = $('#dMessage').html();
+			$('#dMessage').html(text + event.data + '<br>');
+			console.log('Received：', event.data);
+		};
+		sock.onclose = function() {
+			console.log('close');
+		};
+	}
+
+	function echo() {
+		if (sock != null) {
+			sock.send($('#txtMessage').val());
+		}
+	}
+	
+	function disconnect() {
+		if (sock != null) {
+			sock.close();
+			sock = null;
+		}
+	}
+</script>
+</head>
+<body>
+	<input type="button" value="Connect" width="60" onclick="connect()">
+	<input type="button" value="Disconnect" width="60" onclick="disconnect()">
+	<br>
+	<textarea id="txtMessage" rows="2" cols="30">推送消息</textarea>
+	<br>
+	<input type="button" value="Send Message" onclick="echo()">
+	<br><br>
+	<div id="dMessage" style="border: solid 1px #333; width: 500px;"></div>
+</body>
+</html>
